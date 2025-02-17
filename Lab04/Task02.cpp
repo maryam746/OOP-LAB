@@ -1,97 +1,90 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-class Car{
-	string brand;
-	string model;
-	float rentalprice;
-	bool availability;
-	
-	public:
-		Car(){
-			brand = "Unknown";
-			model = "Generic";
-			rentalprice=0.0;
-			availability = true;
-		
-		}
-		
-		void rentalrequest(){
-			string c;
-			
-			cout<<"Enter car name for rent:"<<endl;
-			getline(cin,c);
-			if(check == true ){
-				cout<<"Car is avaiable for rent";
-				availability = false; 
-				
-			}
-		
-			}
-			
-		
-		
-		bool check(){
-			if(availability == true){
-				cout<<"Car is available"<<endl;
-				return true;
-				
-			}
-			else{
-				cout<<"Car is not available"<<endl;
-		        return false;
-			}
-			
-		}
-		
-		void setb(string b){
-			brand=b;
-		}
-		
-		void setm(string m){
-			mod=m
-		}
-	
-	void update(){
-		string bran;
-		string mod;
-		setb("Toyota");
-		
-		setm("Aqua");
-		
-		
-		
-	}
-	
-Car (string b , string m){
-	brand = b;
-	mod=m;
-}	
+class Car
+{
+private:
+    string brand;
+    string model;
+    float rentalPrice;
+    bool availability;
+    float totalPrice;
 
-void applydis(int days,int rent){
-	float discount;
-	if(days > 5){
-		discount = 0.05 * rent;
-		
-	}
-	else if(days > 10){
-		discount = 0.1 * rent;
-	}
-}
+public:
+    Car()
+    {
+        brand = "Unknown";
+        model = "Generic";
+        rentalPrice = 0.0;
+        availability = true;
+        totalPrice = 0.0;
+    }
 
+    // Parameterized constructor
+    Car(string b, string m, float price)
+    {
+        brand = b;
+        model = m;
+        rentalPrice = price;
+        availability = true;
+        totalPrice = 0.0;
+    }
 
+    bool isAvailable()
+    {
+        return availability;
+    }
 
-	
-	
-	
-	
+    float rentCar(int days)
+    {
+        if (availability)
+        {
+            totalPrice = applyDiscount(days, rentalPrice * days);
+            availability = false;
+            cout << "Car rented successfully!" << endl;
+            cout << "Total Price after discount (if applicable): $" << totalPrice << endl;
+            return totalPrice;
+        }
+        else
+        {
+            cout << "Sorry, this car is already rented." << endl;
+            return 0;
+        }
+    }
+
+    float applyDiscount(int days, float price)
+    {
+        if (days > 10)
+        {
+            price -= price * 0.10;
+        }
+        else if (days > 5)
+        {
+            price -= price * 0.05;
+        }
+        return price;
+    }
+
+    void update(string b, string m, float price)
+    {
+        brand = b;
+        model = m;
+        rentalPrice = price;
+    }
+
+    void display()
+    {
+        cout << "Brand: " << brand << "\nModel: " << model
+             << "\nRental Price: $" << rentalPrice;
+        
+    }
 };
 
-
-
-
-int main(){
-	Car c1;
-	c1.update();
-	c1.applydis(7,1000);
-}
+    int main()
+    {
+        Car car1;
+        car1.update("Toyota", "Corolla", 100.0);
+        car1.applyDiscount(15, 1500.0);
+        car1.display();
+        cout << endl;
+    }
