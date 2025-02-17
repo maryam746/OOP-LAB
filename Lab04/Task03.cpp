@@ -59,6 +59,8 @@ public:
         delete model;
         delete rentalPrice;
         delete available;
+
+        cout<<"Destructor called"<<endl;
     }
 };
 
@@ -80,8 +82,12 @@ int main() {
     cout<<endl;
     car2->displayDetails();
 
+    cout<<endl;
+
     delete car1;
+    cout <<"Car1 deleted"<<endl;
     delete car2;
+    cout <<"Car2 deleted"<<endl;
     
     return 0;
 }
