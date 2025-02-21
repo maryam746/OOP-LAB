@@ -11,61 +11,55 @@ private:
     float *totalPrice;
 
 public:
-    
     Car() {
         brand = new string("Unknown");
-        model = new string ("Generic");
-        rentalPrice = new float (50.0);
+        model = new string("Generic");
+        rentalPrice = new float(50.0);
         available = new bool(true);
         totalPrice = new float(0.0);
     }
-    
-    
-    
+
     void updateDetails(const string& newBrand, const string& newModel, double newPrice) {
-        *brand = newBrand;
-        *model = newModel;
-        *rentalPrice = newPrice;
+        *this->brand = newBrand;
+        *this->model = newModel;
+        *this->rentalPrice = newPrice;
     }
 
-    
-    bool isAvailable() {
-        return available;
+    bool isAvailable() const {
+        return *this->available;
     }
 
+    float rentCar(int days, float rent) {
+        if (*this->available) {
+            *this->rentalPrice = rent;
+            *this->totalPrice = days * *this->rentalPrice;
 
-    float rentcar(int days,float rent){
-        if(available){
-
-            *rentalPrice = rent;
-            *totalPrice = days * *rentalPrice;
             cout << "Car rented successfully!" << endl;
-            cout << "Total Price: " << *totalPrice << endl;
-            *available = false;
-            return *totalPrice;
+            cout << "Total Price: " << *this->totalPrice << endl;
+
+            *this->available = false;  
+            return *this->totalPrice;
         } else {
             cout << "Sorry, this car is already rented." << endl;
             return 0;
         }
-
     }
 
-  
-
-    
     void displayDetails() const {
-        cout << "Brand: " << *brand << "\nModel: " << *model 
-             << "\nRental Price: " << *rentalPrice 
-             << "\nAvailable: " << (*available ? "Yes" : "No") 
-             <<"\nTotal Price: " << *totalPrice << endl;
+        cout << "Brand: " << *this->brand 
+             << "\nModel: " << *this->model 
+             << "\nRental Price: " << *this->rentalPrice 
+             << "\nAvailable: " << (*this->available ? "Yes" : "No") 
+             << "\nTotal Price: " << *this->totalPrice 
+             << endl;
     }
-
 
     ~Car() {
         delete brand;
         delete model;
         delete rentalPrice;
         delete available;
+        delete totalPrice;
     }
 };
 
@@ -73,21 +67,21 @@ int main() {
     Car *car1 = new Car();
     car1->updateDetails("Toyota", "Corolla", 50.0);
     car1->displayDetails();
-    cout<<endl;
-    car1->rentcar(5,5000);
+    
+    cout << endl;
+    car1->rentCar(5, 5000);
     car1->displayDetails();
 
+    cout << "\n-----------------------\n";
 
     Car *car2 = new Car();
     car2->updateDetails("Honda", "Civic", 60.0);
-    cout<<endl;
     car2->displayDetails();
-    car2->rentcar(2,3000);
+    
+    cout << endl;
+    car2->rentCar(2, 3000);
     car2->displayDetails();
 
     delete car1;
-
     delete car2;
-    
-    return 0;
 }
