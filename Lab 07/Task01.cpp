@@ -1,131 +1,142 @@
 #include <iostream>
+#include <string>
+
 using namespace std;
 
-class Device
-{
-private:
-    int deviceID;
-    string devicename;
-
+class Device {
 protected:
+    int deviceID;
+    string deviceName;
     bool status;
+    string location;
 
 public:
-    Device(int id, string name, bool status) : deviceID(id), devicename(name), status(status) {}
-    virtual void turnOn()
-    {
+    Device(int id, string name, string loc = "")
+        : deviceID(id), deviceName(name), location(loc), status(false) {}
+
+    virtual void turnOn() {
         status = true;
     }
-    virtual void turnOff()
-    {
+
+    virtual void turnOff() {
         status = false;
     }
-    virtual void getstatus()
-    {
-        if (status == true)
-        {
-            cout << "ON" << endl;
-        }
-        else
-        {
-            cout << "OFF" << endl;
-        }
+
+    virtual void getStatus() const {
+        cout << deviceName << " is " << (status ? "On" : "Off") << endl;
     }
 
-    virtual void displayinfo()
-    {
-        cout << "Device ID: " << deviceID << endl;
-        cout << "Device Name: " << devicename << endl;
-        cout << "Device Status: ";
-        getstatus();
+    virtual void displayInfo() const {
+        cout << "Device ID: " << deviceID << "\nName: " << deviceName
+             << "\nLocation: " << location << "\nStatus: " << (status ? "On" : "Off") << endl;
     }
+
     virtual ~Device() {}
 };
 
-class Light : public Device
-{
+// Derived class: Light
+class Light : public Device {
 private:
-    int brightnesslevel;
-    string colormode;
+    int brightnessLevel;
+    string colorMode;
 
 public:
-    Light(int id, string name, bool status, int brightness, string color) : Device(id, name, status), brightnesslevel(brightness), colormode(color) {}
+    Light(int id, string name, string loc, int brightness, string color)
+        : Device(id, name, loc), brightnessLevel(brightness), colorMode(color) {}
 
-    void displayinfo() override
-    {
-        Device::displayinfo();
-        cout << "Brightness Level: " << brightnesslevel << endl;
-        cout << "Color Mode: " << colormode << endl;
+    void displayInfo() const override {
+        Device::displayInfo();
+        cout << "Brightness Level: " << brightnessLevel
+             << "\nColor Mode: " << colorMode << endl;
     }
 };
 
-class Thermostat : public Device
-{
+// Derived class: Thermostat
+class Thermostat : public Device {
 private:
     float temperature;
     string mode;
-    float targettemperature;
+    float targetTemperature;
 
 public:
-    Thermostat(int id, string name, bool status, float temp, string mode, float targettemp) : Device(id, name, status), temperature(temp), mode(mode), targettemperature(targettemp) {}
+    Thermostat(int id, string name, string loc, float temp, string m, float target)
+        : Device(id, name, loc), temperature(temp), mode(m), targetTemperature(target) {}
 
-    void getstatus() override
-    {
-        Device::getstatus();
-        cout << "Temperature: " << temperature << endl;
+    void getStatus() const override {
+        cout << deviceName << " is set to " << mode << " mode, "
+             << "Current Temp: " << temperature << "°C, "
+             << "Target: " << targetTemperature << "°C" << endl;
     }
 };
 
-class Securitycamera : public Device
-{
-
+// Derived class: SecurityCamera
+class SecurityCamera : public Device {
 private:
-    bool recordingstatus;
-    int resolution;
-    bool nightvision;
+    string resolution;
+    bool recordingStatus;
+    bool nightVisionEnabled;
 
 public:
-    Securitycamera(int id, string name, bool status, bool recording, int res, bool night) : Device(id, name, status), recordingstatus(recording), resolution(res), nightvision(night) {}
-    void turnOn() override
-    {
+    SecurityCamera(int id, string name, string loc, string res, bool nightVision)
+        : Device(id, name, loc), resolution(res), nightVisionEnabled(nightVision), recordingStatus(false) {}
+
+    void turnOn() override {
         status = true;
-        recordingstatus = true;
-        cout << "Recording has been started" << endl;
+        recordingStatus = true;
+    }
+
+    void displayInfo() const override {
+        Device::displayInfo();
+        cout << "Resolution: " << resolution
+             << "\nNight Vision: " << (nightVisionEnabled ? "Enabled" : "Disabled")
+             << "\nRecording: " << (recordingStatus ? "Yes" : "No") << endl;
     }
 };
 
-class SmartPlug : public Device
-{
+// Derived class: SmartPlug
+class SmartPlug : public Device {
 private:
-    float powerconsumption;
-    int timersetting;
-    bool power;
+    double powerConsumption;
+    int timerSetting;
 
 public:
-    SmartPlug(int id, string name, bool status, float power, int time) : Device(id, name, status), powerconsumption(power), timersetting(time) {}
+    SmartPlug(int id, string name, string loc, double power, int timer)
+        : Device(id, name, loc), powerConsumption(power), timerSetting(timer) {}
 
-    void turnOff() override
-    {
+    void turnOff() override {
         status = false;
-        power = false;
-        cout << "Device has been turned off" << endl;
+        cout << deviceName << " turned off. Power used: " << powerConsumption << " kWh." << endl;
+    }
+
+    void displayInfo() const override {
+        Device::displayInfo();
+        cout << "Power Consumption: " << powerConsumption
+             << " kWh\nTimer Setting: " << timerSetting << " mins" << endl;
     }
 };
 
-int main()
-{
+// Main function to test all devices
+int main() {
+    Light livingRoomLight(101, "Living Room Light", "Living Room", 75, "Warm White");
+    Thermostat homeThermostat(102, "Nest Thermostat", "Hallway", 22.5, "Heating", 24.0);
+    SecurityCamera frontCamera(103, "Front Door Camera", "Entrance", "1080p", true);
+    SmartPlug coffeePlug(104, "Coffee Maker Plug", "Kitchen", 0.65, 30);
 
-    Light l1(1, "Light", true, 100, "White");
-    l1.displayinfo();
+    livingRoomLight.turnOn();
+    homeThermostat.turnOn();
+    frontCamera.turnOn();
+    coffeePlug.turnOn();
 
-    Thermostat t1(2, "Thermostat", true, 25, "Cool", 20);
-    t1.displayinfo();
-
-    Securitycamera s1(3, "Security Camera", true, true, 1080, true);
-    s1.displayinfo();
-
-    SmartPlug sp1(4, "Smart Plug", true, 100, 5);
-    sp1.displayinfo();
+    cout << "\n--- Device Status & Info ---\n" << endl;
+    livingRoomLight.displayInfo();
+    cout << endl;
+    homeThermostat.getStatus();
+    homeThermostat.displayInfo();
+    cout << endl;
+    frontCamera.displayInfo();
+    cout << endl;
+    coffeePlug.turnOff(); // triggers logging power consumption
+    coffeePlug.displayInfo();
 
     return 0;
 }
