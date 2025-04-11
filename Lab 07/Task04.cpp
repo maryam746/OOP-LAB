@@ -1,109 +1,139 @@
 #include <iostream>
+#include <string>
+
 using namespace std;
 
-class Person
-{
+class Person {
 protected:
     string name;
     int age;
-    string contactnumber;
+    string contactNumber;
     string address;
 
 public:
-    Person(string name, int age, string contactnumber, string address) : name(name), age(age), contactnumber(contactnumber), address(address) {};
+    Person(string n, int a, string contact, string addr = "")
+        : name(n), age(a), contactNumber(contact), address(addr) {}
 
-    virtual void displayinfo()
-    {
-        cout << " Name : " << name << endl;
-        cout << "Age : " << age << endl;
-        cout << "Contact Number : " << contactnumber << endl;
-        cout << "Address : " << address << endl;
+    virtual void displayInfo() const {
+        cout << "Name: " << name << "\nAge: " << age << "\nContact: " << contactNumber
+             << "\nAddress: " << (address.empty() ? "N/A" : address) << endl;
     }
 
-    virtual void updateinfo(string name, int age, string contactnumber, string address)
-    {
-        this->name = name;
-        this->age = age;
-        this->contactnumber = contactnumber;
-        this->address = address;
+    virtual void updateInfo(string newInfo, string type) {
+        if (type == "address") {
+            address = newInfo;
+        } else if (type == "contact") {
+            contactNumber = newInfo;
+        }
     }
 
     virtual ~Person() {}
 };
 
-class Patient;
-
-class Doctor : public Person
-{
+class Patient : public Person {
 private:
-    string specialization;
-    int consultationfee;
-    Patient *patientlist[10];
-
-    public : 
-    Doctor(string name, int age, string contactnumber, string address, string specialization, string consulatationfee
-
-};
-
-class Patient : public Person
-{
     int patientID;
-    string medicalhistory;
-    Doctor *doctorassigned;
-
-    public:
-    Patient(string name, int age, string contactnumber, string address, int patientID, string medicalhistory, Doctor *doctorassigned) : Person(name, age, contactnumber, address), patientID(patientID), medicalhistory(medicalhistory), doctorassigned(doctorassigned) {}
-
-};
-
-class Nurse : public Person
-{
-private:
-    string assignedward;
-    string shifttimings;
+    string medicalHistory;
+    string doctorAssigned;
 
 public:
-    Nurse(string name, int age, string contactnumber, string address, string assignedward, string shifttimings) : Person(name, age, contactnumber, address), assignedward(assignedward), shifttimings(shifttimings) {}
+    Patient(string n, int a, string contact, int id, string history, string doctor)
+        : Person(n, a, contact), patientID(id), medicalHistory(history), doctorAssigned(doctor) {}
 
-    void displayinfo() override
-    {
-        Person::displayinfo();
-        cout << "Assigned Ward : " << assignedward << endl;
-        cout << "Shift Timings : " << shifttimings << endl;
+    void displayInfo() const override {
+        Person::displayInfo();
+        cout << "Patient ID: " << patientID << "\nMedical History: " << medicalHistory
+             << "\nAssigned Doctor: " << doctorAssigned << endl;
     }
 };
 
-class Administrator : public Person
-{
+class Doctor : public Person {
+private:
+    string specialization;
+    double consultationFee;
+    Patient* patientsList[10];
+    int numPatients;
+
+public:
+    Doctor(string n, int a, string contact, string specialization, double fee)
+        : Person(n, a, contact), specialization(specialization), consultationFee(fee), numPatients(0) {}
+
+    void addPatient(Patient* patient) {
+        if (numPatients < 10) {
+            patientsList[numPatients++] = patient;
+        } else {
+            cout << "Patient list is full!" << endl;
+        }
+    }
+
+    void displayInfo() const override {
+        Person::displayInfo();
+        cout << "Specialization: " << specialization << "\nConsultation Fee: $" << consultationFee << endl;
+        cout << "Patients: ";
+        for (int i = 0; i < numPatients; ++i) {
+            cout << patientsList[i]->name << " ";
+        }
+        cout << endl;
+    }
+};
+
+class Nurse : public Person {
+private:
+    string assignedWard;
+    string shiftTimings;
+
+public:
+    Nurse(string n, int a, string contact, string ward, string shift)
+        : Person(n, a, contact), assignedWard(ward), shiftTimings(shift) {}
+
+    void displayInfo() const override {
+        Person::displayInfo();
+        cout << "Assigned Ward: " << assignedWard << "\nShift Timings: " << shiftTimings << endl;
+    }
+};
+
+class Administrator : public Person {
 private:
     string department;
     double salary;
 
 public:
-    Administrator(string name, int age, string contacnumber, string address, string department, double salary) : Person(name, age, contactnumber, address), department(department), salary(salary) {}
+    Administrator(string n, int a, string contact, string dept, double sal)
+        : Person(n, a, contact), department(dept), salary(sal) {}
 
-    void displayinfo() override
-    {
-        Person ::displayinfo();
-        cout << "Department : " << department << endl;
-        cout << "Salary : " << salary << endl;
+    void updateInfo(string newInfo, string type) override {
+        if (type == "department") {
+            department = newInfo;
+        } else if (type == "salary") {
+            salary = stod(newInfo);
+        }
     }
 
-    void updateInfo(string newName, int newAge, string newContact, string newAddress, string newDept, double newSalary)
-    {
-        Person::updateInfo(newName, newAge, newContact, newAddress);
-        department = newDept;
-        salary = newSalary;
-    }
-
-    void displayinfo() override
-    {
-        Person::displayinfo();
-        cout << "Department : " << department << endl;
-        cout << "Salary : " << salary << endl;
+    void displayInfo() const override {
+        Person::displayInfo();
+        cout << "Department: " << department << "\nSalary: $" << salary << endl;
     }
 };
-int main()
-{
-    Patient p("John Doe", 30, "1234567890", "123 Main St", 101, "No known allergies", nullptr);
+
+int main() {
+    Patient p1("John Doe", 45, "123-456-7890", 1001, "Diabetes", "Dr. Smith");
+    Doctor d1("Dr. Smith", 50, "987-654-3210", "Cardiologist", 200.0);
+    Nurse n1("Nancy", 30, "555-123-4567", "Cardiology", "9 AM - 5 PM");
+    Administrator a1("Anna", 40, "555-987-6543", "HR", 5000.0);
+
+    d1.addPatient(&p1);
+
+    cout << "--- Doctor Info ---\n";
+    d1.displayInfo();
+
+    cout << "\n--- Patient Info ---\n";
+    p1.displayInfo();
+
+    cout << "\n--- Nurse Info ---\n";
+    n1.displayInfo();
+
+    cout << "\n--- Administrator Info ---\n";
+    a1.displayInfo();
+
+    return 0;
 }
